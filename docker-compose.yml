@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+    api:
+        container_name: api
+        build:
+            context: .
+            target: php
+            args:
+                - APP_ENV=${APP_ENV}
+        environment:
+            - APP_ENV=${APP_ENV}
+            - CONTAINER_ROLE=app
+        working_dir: /var/www/html
+        volumes:
+            - ./:/var/www/html
+        ports:
+            - 8000:8080
+        depends_on:
+            - database
+            - redis
+    database:
+        container_name: database
+        image: mysql:8.0
+        ports:
+            -   3307:3307
+        environment:
+            - MYSQL_DATABASE=htmx
+            - MYSQL_USER=mahedi
+            - MYSQL_PASSWORD=123456
+            - MYSQL_ROOT_PASSWORD=123456
+        volumes:
+            - db-data:/var/lib/mysql
+    redis:
+        container_name:  redis
+        image: redis:alpine
+        command: redis-server --appendonly yes --requirepass  "secret"
+        ports:
+            - 6380:6379
+volumes:
+    db-data: ~
